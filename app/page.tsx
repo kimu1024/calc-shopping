@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Product = { name: string; emoji: string; price: number; color: string };
 type Customer = { name: string; emoji: string; message: string };
-type Round = { customer: Customer; products: Product[]; payment: number };
+type Round = { customer: Customer; products: Product[]; payment: number; paymentPieces: number[] };
 type Phase = "total" | "change";
 
 const PRODUCTS: Product[] = [
@@ -40,10 +40,26 @@ function makeRounds(): Round[] {
       shuffled[(index * 2 + itemIndex) % shuffled.length],
     );
     const total = products.reduce((sum, item) => sum + item.price, 0);
-    const paymentOptions = [500, 1000];
-    const payment = paymentOptions.find((amount) => amount >= total) ?? 1000;
-    return { customer, products, payment };
+    const paymentPieces = makePayment(total, index);
+    const payment = paymentPieces.reduce((sum, piece) => sum + piece, 0);
+    return { customer, products, payment, paymentPieces };
   });
+}
+
+function makePayment(total: number, customerIndex: number) {
+  if (customerIndex === 0) {
+    const nextHundred = Math.ceil((total + 10) / 100) * 100;
+    return Array.from({ length: nextHundred / 100 }, () => 100);
+  }
+
+  const paymentStyles = [
+    [500],
+    [500, 100],
+    [500, 100, 100],
+    [1000],
+  ];
+  const selected = paymentStyles[customerIndex - 1] ?? [1000];
+  return selected.reduce((sum, piece) => sum + piece, 0) > total ? selected : [1000];
 }
 
 function moneyPieces(amount: number) {
@@ -79,11 +95,22 @@ function playTone(kind: "good" | "next") {
   });
 }
 
-function MoneyPicture({ amount, label }: { amount: number; label: string }) {
-  const pieces = moneyPieces(amount);
+function PriceCoins({ amount }: { amount: number }) {
+  return (
+    <div className="price-coins" aria-label={`${amount}円ぶんの硬貨`}>
+      {moneyPieces(amount).map((piece, index) => (
+        <span className={`price-coin price-coin-${piece}`} key={`${piece}-${index}`}>
+          <b>{piece}</b><small>円</small>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function MoneyPicture({ amount, label, pieces = moneyPieces(amount) }: { amount: number; label: string; pieces?: number[] }) {
   return (
     <div className="money-help" aria-label={`${label} ${amount}円`}>
-      <div className="money-label"><span>👛</span>{label}</div>
+      <div className="money-label"><span>👛</span>{label}<b>ぜんぶで {amount}円</b></div>
       <div className="money-pieces">
         {pieces.map((piece, index) =>
           piece === 1000 ? (
@@ -299,17 +326,18 @@ export default function Home() {
             <div className="speech-bubble">{phase === "total" ? round.customer.message : `${round.payment}円で おねがいします！`}</div>
           </div>
 
-          <div className="basket-title"><span>🧺</span> かごの なか</div>
+          <div className="basket-title"><span>🧺</span> かごの なか <small>こうかも かぞえてみよう！</small></div>
           <div className="product-list">
             {round.products.map((product, index) => (
               <article className={`product-card ${product.color}`} key={`${product.name}-${index}`}>
                 <div className="product-emoji">{product.emoji}</div>
                 <div><h2>{product.name}</h2><p><b>{product.price}</b> 円</p></div>
+                <PriceCoins amount={product.price} />
               </article>
             ))}
           </div>
 
-          {phase === "change" && <MoneyPicture amount={round.payment} label="おきゃくさまが だしたお金" />}
+          {phase === "change" && <MoneyPicture amount={round.payment} pieces={round.paymentPieces} label="おきゃくさまが だしたお金" />}
           {phase === "change" && status === "good" && <MoneyPicture amount={correctAnswer} label="わたす おつり" />}
         </section>
 
