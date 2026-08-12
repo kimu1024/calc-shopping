@@ -74,6 +74,12 @@ function moneyPieces(amount: number) {
   return pieces;
 }
 
+function groupMoney(pieces: number[]) {
+  return DENOMS
+    .map((value) => ({ value, count: pieces.filter((piece) => piece === value).length }))
+    .filter((group) => group.count > 0);
+}
+
 function playTone(kind: "good" | "next") {
   if (typeof window === "undefined") return;
   const AudioContextClass = window.AudioContext ||
@@ -98,9 +104,12 @@ function playTone(kind: "good" | "next") {
 function PriceCoins({ amount }: { amount: number }) {
   return (
     <div className="price-coins" aria-label={`${amount}円ぶんの硬貨`}>
-      {moneyPieces(amount).map((piece, index) => (
-        <span className={`price-coin price-coin-${piece}`} key={`${piece}-${index}`}>
-          <b>{piece}</b><small>円</small>
+      {groupMoney(moneyPieces(amount)).map(({ value, count }) => (
+        <span className="price-money-group" key={value}>
+          <span className={`price-coin price-coin-${value}`} aria-hidden="true">
+            <b>{value}</b><small>円</small>
+          </span>
+          <span className="price-money-count">{value}円 × {count}</span>
         </span>
       ))}
     </div>
@@ -112,13 +121,16 @@ function MoneyPicture({ amount, label, pieces = moneyPieces(amount) }: { amount:
     <div className="money-help" aria-label={`${label} ${amount}円`}>
       <div className="money-label"><span>👛</span>{label}<b>ぜんぶで {amount}円</b></div>
       <div className="money-pieces">
-        {pieces.map((piece, index) =>
-          piece === 1000 ? (
-            <div className="bill" key={`${piece}-${index}`}><span>1000</span><small>円</small></div>
-          ) : (
-            <div className={`coin coin-${piece}`} key={`${piece}-${index}`}><span>{piece}</span><small>円</small></div>
-          ),
-        )}
+        {groupMoney(pieces).map(({ value, count }) => (
+          <div className="money-piece-group" key={value}>
+            {value === 1000 ? (
+              <div className="bill" aria-hidden="true"><span>1000</span><small>円</small></div>
+            ) : (
+              <div className={`coin coin-${value}`} aria-hidden="true"><span>{value}</span><small>円</small></div>
+            )}
+            <b className="money-piece-count">{value}円 × {count}</b>
+          </div>
+        ))}
       </div>
     </div>
   );
