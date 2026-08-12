@@ -105,11 +105,12 @@ function PriceCoins({ amount }: { amount: number }) {
   return (
     <div className="price-coins" aria-label={`${amount}円ぶんの硬貨`}>
       {groupMoney(moneyPieces(amount)).map(({ value, count }) => (
-        <span className="price-money-group" key={value}>
-          <span className={`price-coin price-coin-${value}`} aria-hidden="true">
-            <b>{value}</b><small>円</small>
-          </span>
-          <span className="price-money-count">{value}円 × {count}</span>
+        <span className="price-money-group" key={value} aria-label={`${value}円が${count}枚`}>
+          {Array.from({ length: count }, (_, index) => (
+            <span className={`price-coin price-coin-${value}`} key={index} aria-hidden="true">
+              <b>{value}</b><small>円</small>
+            </span>
+          ))}
         </span>
       ))}
     </div>
@@ -122,13 +123,14 @@ function MoneyPicture({ amount, label, pieces = moneyPieces(amount) }: { amount:
       <div className="money-label"><span>👛</span>{label}<b>ぜんぶで {amount}円</b></div>
       <div className="money-pieces">
         {groupMoney(pieces).map(({ value, count }) => (
-          <div className="money-piece-group" key={value}>
-            {value === 1000 ? (
-              <div className="bill" aria-hidden="true"><span>1000</span><small>円</small></div>
-            ) : (
-              <div className={`coin coin-${value}`} aria-hidden="true"><span>{value}</span><small>円</small></div>
+          <div className="money-piece-group" key={value} aria-label={`${value}円が${count}枚`}>
+            {Array.from({ length: count }, (_, index) =>
+              value === 1000 ? (
+                <div className="bill" key={index} aria-hidden="true"><span>1000</span><small>円</small></div>
+              ) : (
+                <div className={`coin coin-${value}`} key={index} aria-hidden="true"><span>{value}</span><small>円</small></div>
+              ),
             )}
-            <b className="money-piece-count">{value}円 × {count}</b>
           </div>
         ))}
       </div>
