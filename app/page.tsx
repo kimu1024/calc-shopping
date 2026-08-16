@@ -7,38 +7,58 @@ type Customer = { name: string; emoji: string; message: string };
 type Round = { customer: Customer; products: Product[]; payment: number; paymentPieces: number[] };
 type Phase = "total" | "change";
 
-const PRODUCTS: Product[] = [
-  { name: "いちごミルク", emoji: "🥛", price: 120, color: "pink" },
-  { name: "カップケーキ", emoji: "🧁", price: 180, color: "purple" },
-  { name: "りんご", emoji: "🍎", price: 80, color: "red" },
-  { name: "えんぴつ", emoji: "✏️", price: 60, color: "yellow" },
-  { name: "ノート", emoji: "📒", price: 140, color: "blue" },
-  { name: "リボン", emoji: "🎀", price: 90, color: "pink" },
-  { name: "クッキー", emoji: "🍪", price: 110, color: "orange" },
-  { name: "ジュース", emoji: "🧃", price: 130, color: "green" },
-  { name: "シール", emoji: "🌟", price: 70, color: "yellow" },
-  { name: "ハンカチ", emoji: "🌼", price: 160, color: "green" },
-  { name: "キャンディ", emoji: "🍬", price: 50, color: "purple" },
-  { name: "パン", emoji: "🥐", price: 100, color: "orange" },
+const PRODUCTS: Array<Omit<Product, "price">> = [
+  { name: "いちごミルク", emoji: "🥛", color: "pink" },
+  { name: "カップケーキ", emoji: "🧁", color: "purple" },
+  { name: "りんご", emoji: "🍎", color: "red" },
+  { name: "えんぴつ", emoji: "✏️", color: "yellow" },
+  { name: "ノート", emoji: "📒", color: "blue" },
+  { name: "リボン", emoji: "🎀", color: "pink" },
+  { name: "クッキー", emoji: "🍪", color: "orange" },
+  { name: "ジュース", emoji: "🧃", color: "green" },
+  { name: "シール", emoji: "🌟", color: "yellow" },
+  { name: "ハンカチ", emoji: "🌼", color: "green" },
+  { name: "キャンディ", emoji: "🍬", color: "purple" },
+  { name: "パン", emoji: "🥐", color: "orange" },
 ];
 
 const CUSTOMERS: Customer[] = [
   { name: "うさぎさん", emoji: "🐰", message: "これ、くださいな♪" },
   { name: "ねこさん", emoji: "🐱", message: "おかいものって たのしいね！" },
   { name: "くまさん", emoji: "🐻", message: "おつりも おねがいします" },
-  { name: "きつねさん", emoji: "🦊", message: "じょうずな店員さんだね！" },
   { name: "パンダさん", emoji: "🐼", message: "さいごのおきゃくさまだよ" },
 ];
 
-const DENOMS = [1000, 500, 100, 50, 10];
+const DENOMS = [1000, 500, 100, 50, 10, 5, 1];
+const MAX_SCORE = CUSTOMERS.length * 2;
+
+const FIRST_PRICE_PAIRS: Array<[number, number]> = [
+  [27, 38], [34, 45], [41, 56], [23, 65],
+];
+const MIDDLE_PRICE_PAIRS: Array<[number, number]> = [
+  [58, 67], [74, 89], [46, 78], [65, 96], [83, 49],
+];
+const LAST_PRICE_PAIRS: Array<[number, number]> = [
+  [315, 465], [241, 538], [128, 647], [352, 426],
+];
+
+function pickOne<T>(items: T[]) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function makePricePairs() {
+  const middlePairs = [...MIDDLE_PRICE_PAIRS].sort(() => Math.random() - 0.5).slice(0, 2);
+  return [pickOne(FIRST_PRICE_PAIRS), ...middlePairs, pickOne(LAST_PRICE_PAIRS)];
+}
 
 function makeRounds(): Round[] {
   const shuffled = [...PRODUCTS].sort(() => Math.random() - 0.5);
+  const pricePairs = makePricePairs();
   return CUSTOMERS.map((customer, index) => {
-    const count = index < 2 ? 2 : 3;
-    const products = Array.from({ length: count }, (_, itemIndex) =>
-      shuffled[(index * 2 + itemIndex) % shuffled.length],
-    );
+    const products = Array.from({ length: 2 }, (_, itemIndex) => ({
+      ...shuffled[(index * 2 + itemIndex) % shuffled.length],
+      price: pricePairs[index][itemIndex],
+    }));
     const total = products.reduce((sum, item) => sum + item.price, 0);
     const paymentPieces = makePayment(total, index);
     const payment = paymentPieces.reduce((sum, piece) => sum + piece, 0);
@@ -47,18 +67,13 @@ function makeRounds(): Round[] {
 }
 
 function makePayment(total: number, customerIndex: number) {
-  if (customerIndex === 0) {
-    const nextHundred = Math.ceil((total + 10) / 100) * 100;
-    return Array.from({ length: nextHundred / 100 }, () => 100);
-  }
-
   const paymentStyles = [
+    [100],
+    [100, 100],
     [500],
-    [500, 100],
-    [500, 100, 100],
     [1000],
   ];
-  const selected = paymentStyles[customerIndex - 1] ?? [1000];
+  const selected = paymentStyles[customerIndex] ?? [1000];
   return selected.reduce((sum, piece) => sum + piece, 0) > total ? selected : [1000];
 }
 
@@ -305,8 +320,8 @@ export default function Home() {
           <div className="big-mascot">🐰</div>
           <p className="eyebrow">きょうのおみせは おしまい</p>
           <h1>スーパー店員さん！</h1>
-          <p className="finish-copy">5人のおきゃくさまを<br />じょうずに おてつだいできたね</p>
-          <div className="score-medal"><span>🏅</span><b>{score}</b><small> / 10 せいかい</small></div>
+          <p className="finish-copy">{CUSTOMERS.length}人のおきゃくさまを<br />じょうずに おてつだいできたね</p>
+          <div className="score-medal"><span>🏅</span><b>{score}</b><small> / {MAX_SCORE} せいかい</small></div>
           <button className="primary-button" onClick={restart}>もういちど あそぶ</button>
         </div>
       </main>
@@ -319,14 +334,14 @@ export default function Home() {
       <header className="topbar">
         <div className="brand"><span className="brand-mark">🌷</span><div><small>たしざん・ひきざん</small><h1>おはなマート</h1></div></div>
         <div className="top-actions">
-          <div className="score-chip"><span>⭐</span><b>{score}</b><small>/ 10</small></div>
+          <div className="score-chip"><span>⭐</span><b>{score}</b><small>/ {MAX_SCORE}</small></div>
           <button className="icon-button" onClick={() => setMuted((value) => !value)} aria-label={muted ? "音を出す" : "音を消す"}>{muted ? "🔇" : "🔊"}</button>
         </div>
       </header>
 
-      <section className="progress-wrap" aria-label={`5人中${roundIndex + 1}人目`}>
-        <div className="progress-label"><b>きょうのおきゃくさま</b><span>{roundIndex + 1} / 5</span></div>
-        <div className="progress-track"><div style={{ width: `${((roundIndex * 2 + (phase === "change" ? 1 : 0)) / 10) * 100}%` }} /></div>
+      <section className="progress-wrap" aria-label={`${CUSTOMERS.length}人中${roundIndex + 1}人目`}>
+        <div className="progress-label"><b>きょうのおきゃくさま</b><span>{roundIndex + 1} / {CUSTOMERS.length}</span></div>
+        <div className="progress-track"><div style={{ width: `${((roundIndex * 2 + (phase === "change" ? 1 : 0)) / MAX_SCORE) * 100}%` }} /></div>
         <div className="customer-dots">
           {CUSTOMERS.map((customer, index) => <span key={customer.name} className={index < roundIndex ? "done" : index === roundIndex ? "active" : ""}>{index < roundIndex ? "✓" : customer.emoji}</span>)}
         </div>
