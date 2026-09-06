@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Handwriting from "./Handwriting";
 
 type Product = { name: string; emoji: string; price: number; color: string };
 type Customer = { name: string; emoji: string; message: string };
@@ -233,6 +234,11 @@ export default function Home() {
   const [score, setScore] = useState(0);
   const [muted, setMuted] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [handwriting, setHandwriting] = useState(false);
+
+  useEffect(() => {
+    setHandwriting(window.matchMedia("(any-pointer: coarse)").matches || navigator.maxTouchPoints > 0);
+  }, []);
 
   useEffect(() => setRounds(makeRounds()), []);
 
@@ -244,20 +250,22 @@ export default function Home() {
   const correctAnswer = phase === "total" ? total : (round?.payment ?? 0) - total;
 
   const enterDigit = useCallback((digit: string) => {
+    if (status === "good" || finished) return;
     setStatus("idle");
     setMessage(phase === "total" ? "ねだんを たしてみよう！" : "おつりは いくらかな？");
     setAnswer((current) => current.length >= 4 || (current === "0" && digit === "0") ? current : `${current}${digit}`.replace(/^0+(?=\d)/, ""));
-  }, [phase]);
+  }, [phase, status, finished]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || status === "good" || finished) return;
       if (/^\d$/.test(event.key)) enterDigit(event.key);
       if (event.key === "Backspace") setAnswer((current) => current.slice(0, -1));
       if (event.key === "Enter") document.getElementById("check-answer")?.click();
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [enterDigit]);
+  }, [enterDigit, status, finished]);
 
   if (!round) return <main className="loading">おみせを じゅんびしているよ… 🌷</main>;
 
@@ -332,7 +340,7 @@ export default function Home() {
     <main className="game-shell">
       {status === "good" && <div className="confetti" aria-hidden="true">✦　●　★　●　✦　★　●</div>}
       <header className="topbar">
-        <div className="brand"><span className="brand-mark">🌷</span><div><small>たしざん・ひきざん</small><h1>おはなマート</h1></div></div>
+        <div className="brand"><span className="brand-mark">🌹</span><div><small>たしざん・ひきざん</small><h1>バラマート</h1></div></div>
         <div className="top-actions">
           <div className="score-chip"><span>⭐</span><b>{score}</b><small>/ {MAX_SCORE}</small></div>
           <button className="icon-button" onClick={() => setMuted((value) => !value)} aria-label={muted ? "音を出す" : "音を消す"}>{muted ? "🔇" : "🔊"}</button>
@@ -382,6 +390,9 @@ export default function Home() {
             <h2>{phase === "total" ? "ぜんぶで いくら？" : "おつりは いくら？"}</h2>
             {phase === "change" && <div className="formula"><span>{round.payment}円</span><b>−</b><span>{total}円</span><b>＝</b><em>?</em></div>}
           </div>
+
+          <div className="writing-mode"><button aria-pressed={handwriting} onClick={() => setHandwriting(true)}>✍️ てがき</button><button aria-pressed={!handwriting} onClick={() => setHandwriting(false)}>数字でけいさん</button></div>
+          {handwriting && <Handwriting key={`${roundIndex}-${phase}`} numbers={phase === "total" ? round.products.map(p => p.price) : [round.payment, total]} subtract={phase === "change"} />}
 
           <div className={`answer-display ${status}`} aria-live="polite">
             <span>{answer || "?"}</span><b>円</b>
