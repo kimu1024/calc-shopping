@@ -11,6 +11,7 @@ export default function Handwriting({ numbers, subtract }: { numbers: number[]; 
   const active = useRef<number | null>(null);
   const [count, setCount] = useState(0);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   function redraw() {
     const el = canvas.current;
@@ -40,6 +41,7 @@ export default function Handwriting({ numbers, subtract }: { numbers: number[]; 
     const el = canvas.current!;
     const observer = new ResizeObserver(() => {
       const rect = el.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       el.width = Math.round(rect.width * window.devicePixelRatio);
       el.height = Math.round(rect.height * window.devicePixelRatio);
       redraw();
@@ -60,24 +62,30 @@ export default function Handwriting({ numbers, subtract }: { numbers: number[]; 
     setCount(strokes.current.length);
   }
 
-  return <section className="handwriting" aria-label="手書きの筆算メモ">
-    <div className="writing-toolbar"><b>✍️ てがきで ひっさん</b>
+  return <section className="handwriting free-memo" aria-label="自由に書けるメモ欄">
+    <div className="memo-heading"><b>メモ欄</b><button className="hint-toggle" aria-expanded={showHint} aria-controls="column-hint" onClick={() => setShowHint(value => !value)}>{showHint ? "ヒントを とじる" : "💡 ヒント"}</button></div>
+    <div className="writing-toolbar">
       <button disabled={!count} onClick={() => { strokes.current.pop(); setCount(strokes.current.length); redraw(); }}>ひとつ もどす</button>
       <button disabled={!count} onClick={() => setConfirmClear(true)}>ぜんぶ けす</button>
     </div>
     {confirmClear && <div className="writing-confirm">メモを ぜんぶ けす？ <button onClick={() => { strokes.current = []; setCount(0); redraw(); setConfirmClear(false); }}>けす</button><button onClick={() => setConfirmClear(false)}>やめる</button></div>}
+    <div className="memo-and-hint">
     <div className="writing-paper">
-      <div className="writing-guide" aria-hidden="true">
+      <canvas ref={canvas} aria-label="指やペンで自由に書くメモ欄。答えは数字キーで入力してください。"
+        onPointerDown={event => { if (active.current !== null || event.button !== 0) return; active.current = event.pointerId; event.currentTarget.setPointerCapture(event.pointerId); strokes.current.push([point(event)]); setConfirmClear(false); redraw(); }}
+        onPointerMove={event => { if (active.current !== event.pointerId) return; strokes.current[strokes.current.length - 1].push(point(event)); redraw(); }}
+        onPointerUp={end} onPointerCancel={end} onLostPointerCapture={end} />
+    </div>
+    {showHint && <aside id="column-hint" className="column-hint" aria-label="筆算の立式ヒント">
+      <p>くらいを そろえてみよう</p>
+      <div className="writing-guide">
         <div className="writing-places"><span>千</span><span>百</span><span>十</span><span>一</span></div>
         <div className="writing-carry" />
         {numbers.map((n, i) => <div className="writing-number" key={i}><b>{i === numbers.length - 1 ? subtract ? "−" : "+" : ""}</b>{String(n).padStart(4, " ").split("").map((d, j) => <span key={j}>{d}</span>)}</div>)}
         <div className="writing-line" />
       </div>
-      <canvas ref={canvas} aria-label="指やペンで筆算を書くスペース。答えは下の数字キーで入力してください。"
-        onPointerDown={event => { if (active.current !== null || event.button !== 0) return; active.current = event.pointerId; event.currentTarget.setPointerCapture(event.pointerId); strokes.current.push([point(event)]); setConfirmClear(false); redraw(); }}
-        onPointerMove={event => { if (active.current !== event.pointerId) return; strokes.current[strokes.current.length - 1].push(point(event)); redraw(); }}
-        onPointerUp={end} onPointerCancel={end} onLostPointerCapture={end} />
+    </aside>}
     </div>
-    <p>指やペンでかいてね。こたえは下の数字キーで入れよう。<br />画面をうごかすときは、メモの外をさわってね。</p>
+    <p>指やペンで かけるよ。スクロールは メモの外で。</p>
   </section>;
 }

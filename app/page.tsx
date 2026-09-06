@@ -154,75 +154,6 @@ function MoneyPicture({ amount, label, pieces = moneyPieces(amount) }: { amount:
   );
 }
 
-function ColumnHelper({ phase, round, onAnswer }: { phase: Phase; round: Round; onAnswer: (value: string) => void }) {
-  const [digits, setDigits] = useState(["", "", "", ""]);
-  const [notes, setNotes] = useState(["", "", "", ""]);
-  const total = round.products.reduce((sum, item) => sum + item.price, 0);
-  const numbers = phase === "total" ? round.products.map((item) => item.price) : [round.payment, total];
-
-  useEffect(() => {
-    setDigits(["", "", "", ""]);
-    setNotes(["", "", "", ""]);
-  }, [phase, round]);
-
-  function setDigit(index: number, value: string) {
-    const next = [...digits];
-    next[index] = value.replace(/\D/g, "").slice(-1);
-    setDigits(next);
-    const joined = next.join("").replace(/^0+/, "") || (next.some(Boolean) ? "0" : "");
-    onAnswer(joined);
-  }
-
-  return (
-    <div className="column-helper">
-      <div className="column-title"><span>✍️</span> ひっさんメモ <small>（つかわなくてもOK）</small></div>
-      <div className="place-labels"><span>千</span><span>百</span><span>十</span><span>一</span></div>
-      <div className="math-grid">
-        <div className="math-row note-row">
-          <b>{phase === "total" ? "くり" : "かり"}</b>
-          {notes.map((note, index) => (
-            <input
-              key={index}
-              value={note}
-              onChange={(event) => {
-                const next = [...notes];
-                next[index] = event.target.value.replace(/\D/g, "").slice(-1);
-                setNotes(next);
-              }}
-              inputMode="numeric"
-              aria-label={`${["千", "百", "十", "一"][index]}のくらいのメモ`}
-              maxLength={1}
-            />
-          ))}
-        </div>
-        {numbers.map((number, rowIndex) => {
-          const padded = String(number).padStart(4, " ").split("");
-          return (
-            <div className="math-row" key={`${number}-${rowIndex}`}>
-              <b>{rowIndex === numbers.length - 1 ? (phase === "total" ? "+" : "−") : ""}</b>
-              {padded.map((digit, index) => <span key={index}>{digit}</span>)}
-            </div>
-          );
-        })}
-        <div className="math-line" />
-        <div className="math-row result-row">
-          <b>=</b>
-          {digits.map((digit, index) => (
-            <input
-              key={index}
-              value={digit}
-              onChange={(event) => setDigit(index, event.target.value)}
-              inputMode="numeric"
-              aria-label={`${["千", "百", "十", "一"][index]}のくらい`}
-              maxLength={1}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function Home() {
   const [rounds, setRounds] = useState<Round[]>([]);
   const [roundIndex, setRoundIndex] = useState(0);
@@ -230,16 +161,9 @@ export default function Home() {
   const [answer, setAnswer] = useState("");
   const [message, setMessage] = useState("ねだんを たしてみよう！");
   const [status, setStatus] = useState<"idle" | "good" | "try">("idle");
-  const [showHelper, setShowHelper] = useState(false);
   const [score, setScore] = useState(0);
   const [muted, setMuted] = useState(false);
   const [finished, setFinished] = useState(false);
-  const [handwriting, setHandwriting] = useState(false);
-
-  useEffect(() => {
-    setHandwriting(window.matchMedia("(any-pointer: coarse)").matches || navigator.maxTouchPoints > 0);
-  }, []);
-
   useEffect(() => setRounds(makeRounds()), []);
 
   const round = rounds[roundIndex];
@@ -292,7 +216,6 @@ export default function Home() {
       setAnswer("");
       setStatus("idle");
       setMessage("おきゃくさまが お金を だしたよ。おつりは？");
-      setShowHelper(false);
       if (!muted) playTone("next");
       return;
     }
@@ -305,7 +228,6 @@ export default function Home() {
     setAnswer("");
     setStatus("idle");
     setMessage("つぎの おきゃくさまだよ！ ねだんを たそう");
-    setShowHelper(false);
   }
 
   function restart() {
@@ -317,7 +239,6 @@ export default function Home() {
     setStatus("idle");
     setScore(0);
     setFinished(false);
-    setShowHelper(false);
   }
 
   if (finished) {
@@ -337,7 +258,7 @@ export default function Home() {
   }
 
   return (
-    <main className="game-shell">
+    <main className={`game-shell phase-${phase}`}>
       {status === "good" && <div className="confetti" aria-hidden="true">✦　●　★　●　✦　★　●</div>}
       <header className="topbar">
         <div className="brand"><span className="brand-mark">🌹</span><div><small>たしざん・ひきざん</small><h1>バラマート</h1></div></div>
@@ -354,6 +275,14 @@ export default function Home() {
           {CUSTOMERS.map((customer, index) => <span key={customer.name} className={index < roundIndex ? "done" : index === roundIndex ? "active" : ""}>{index < roundIndex ? "✓" : customer.emoji}</span>)}
         </div>
       </section>
+
+      <div className="order-strip" aria-label="いまの計算">
+        <span className="order-customer">{round.customer.emoji} <small>{roundIndex + 1}人目</small></span>
+        <div className="order-equation">
+          {phase === "total" ? <><span>{round.products[0].emoji} <b>{round.products[0].price}</b>円</span><i>＋</i><span>{round.products[1].emoji} <b>{round.products[1].price}</b>円</span></> : <><span><small>おあずかり</small><b>{round.payment}</b>円</span><i>−</i><span><small>おかいもの</small><b>{total}</b>円</span></>}
+          <i>＝</i><b className="order-question">？</b>
+        </div>
+      </div>
 
       <div className="game-grid">
         <section className="shop-panel">
@@ -391,9 +320,9 @@ export default function Home() {
             {phase === "change" && <div className="formula"><span>{round.payment}円</span><b>−</b><span>{total}円</span><b>＝</b><em>?</em></div>}
           </div>
 
-          <div className="writing-mode"><button aria-pressed={handwriting} onClick={() => setHandwriting(true)}>✍️ てがき</button><button aria-pressed={!handwriting} onClick={() => setHandwriting(false)}>数字でけいさん</button></div>
-          {handwriting && <Handwriting key={`${roundIndex}-${phase}`} numbers={phase === "total" ? round.products.map(p => p.price) : [round.payment, total]} subtract={phase === "change"} />}
-
+          <div className="calculation-desk free-memo-desk">
+          <div className="answer-area">
+          <div className="answer-label">こたえを 数字キーで 入れてね</div>
           <div className={`answer-display ${status}`} aria-live="polite">
             <span>{answer || "?"}</span><b>円</b>
           </div>
@@ -413,8 +342,9 @@ export default function Home() {
             <button className="primary-button next-button" onClick={goNext}>{phase === "total" ? "お金を もらう" : roundIndex === rounds.length - 1 ? "けっかを みる" : "つぎの おきゃくさま"} <span>→</span></button>
           )}
 
-          <button className="helper-toggle" onClick={() => setShowHelper((value) => !value)} aria-expanded={showHelper}><span>📝</span>{showHelper ? "ひっさんメモを とじる" : "ひっさんメモを つかう"}<b>{showHelper ? "−" : "+"}</b></button>
-          {showHelper && <ColumnHelper phase={phase} round={round} onAnswer={setAnswer} />}
+          </div>
+          <div className="writing-area"><Handwriting key={`${roundIndex}-${phase}`} numbers={phase === "total" ? round.products.map(p => p.price) : [round.payment, total]} subtract={phase === "change"} /></div>
+          </div>
         </section>
       </div>
       <footer>おうちの人へ：答えを急がず、お金を指で数える時間を大切にしてください 🌱</footer>

@@ -116,3 +116,115 @@ footer { padding: 10px 20px 25px; text-align: center; color: #92848a; font-size:
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* Register workbench: keep the order, scratchpad and answer close together. */
+:root { --ink:#343348; --pink:#d43d70; --deep-pink:#a72150; --shadow:0 4px 16px #39304a0a; }
+html { background:#f0f3f8; }
+.game-shell { background:#f0f3f8; overflow:visible; }
+.topbar { height:64px; padding:8px max(16px,calc((100vw - 1160px)/2)); border-bottom:1px solid #e2e4ed; background:#fff; }
+.brand { gap:8px; }.brand-mark { width:40px;height:40px;font-size:24px;border:0;background:#ffe4ec;border-radius:12px; }
+.brand small { display:none; }.brand h1 { font-size:22px; color:#932044; letter-spacing:.06em; }
+.score-chip { min-width:82px; height:40px; padding:0 12px; border:0; border-radius:12px; background:#fff1be; }.score-chip b { font-size:18px; }.score-chip span { font-size:18px; }
+.icon-button { width:44px;height:44px;border-radius:12px; }.top-actions { gap:8px; }
+.progress-wrap { max-width:1160px; padding:10px 0; display:flex; align-items:center; gap:16px; }
+.progress-label { margin:0; font-size:14px; gap:12px; }.progress-label span { white-space:nowrap; }
+.progress-track { flex:1; height:6px; }.customer-dots { margin:0; padding:0; gap:12px; }.customer-dots span { width:28px;height:28px;font-size:16px; }.customer-dots span.active { transform:none;box-shadow:0 0 0 3px #ffe4ec; }
+.order-strip { position:sticky; top:0; z-index:10; max-width:1160px; margin:0 auto 12px; min-height:58px; padding:8px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; border:1px solid #d8dce8; border-radius:14px; background:#fff; box-shadow:0 4px 12px #27243d0c; }
+.order-customer { display:flex; align-items:center; gap:8px; font-size:30px; }.order-customer small { font-size:14px; font-weight:800; }
+.order-equation { display:flex;align-items:center;gap:14px; }.order-equation span { white-space:nowrap; font-size:16px; }.order-equation b { font-size:25px; font-variant-numeric:tabular-nums; }.order-equation i { font-style:normal;color:#9293a2; }.order-equation small { font-size:12px;margin-right:8px; }.order-equation .order-question { color:#bf2b5c; }
+.game-grid { max-width:1160px; padding:0 0 16px; grid-template-columns:minmax(290px,.7fr) minmax(0,1.3fr); gap:16px; }
+.shop-panel,.register-panel { border:1px solid #dce0ea; border-radius:20px; box-shadow:var(--shadow); background:#fff; }
+.shop-panel { padding:16px;min-height:0; }.awning { display:none; }
+.customer-scene { padding:0 0 12px; gap:12px; border:0; }.customer { min-width:48px; }.customer span { font-size:40px;filter:none; }.customer small { font-size:12px; }.speech-bubble { padding:10px 12px;font-size:14px;background:#fff4d4;border:0;border-radius:12px; }.speech-bubble::before { display:none; }
+.basket-title { margin:0 0 10px;font-size:14px;color:#59576b;letter-spacing:0; }.basket-title small { display:none; }
+.product-list { gap:8px; }.product-card { min-height:220px; padding:12px 6px; border-width:1px; border-radius:14px; justify-content:flex-start; gap:5px; }.product-emoji { font-size:34px; }.product-card h2 { margin:0 0 3px;font-size:14px; }.product-card p { font-size:14px; }.product-card p b { color:#38334c;font-size:24px; }
+.price-coins { margin-top:auto;min-height:0;gap:4px; }.price-money-group { min-width:24px;gap:2px; }.price-coin { width:24px;height:24px; }.price-coin-10 { width:24px;height:24px; }.price-coin-5 { width:23px;height:23px; }.price-coin-1 { width:22px;height:22px; }.price-coin b { font-size:10px; }.price-coin small { display:none; }.price-coin-5 b,.price-coin-50 b { transform:translateY(-5px); }
+.money-help { margin-top:10px;padding:10px;border-width:1px; border-radius:12px; }.money-label { font-size:14px;flex-wrap:wrap;gap:4px;margin-bottom:6px; }.money-label span { display:none; }.money-label b { font-size:14px; }.money-pieces { gap:8px; }.coin { width:36px;height:36px; }.coin-10,.coin-5,.coin-1 { width:34px;height:34px; }.coin span { font-size:12px; }.coin-5 span,.coin-50 span { transform:translateY(-7px); }.coin small { display:none; }.bill { width:96px;height:40px; }
+.register-panel { padding:16px;position:relative; }
+.phase-tabs { justify-content:flex-start;margin:0 0 10px;font-size:14px;gap:8px; }.phase-tabs span { width:24px;height:24px; }.phase-tabs i { width:20px; }
+.question-block { text-align:left; }.question-block .eyebrow,.question-block .formula { display:none; }.question-block h2 { margin:0;font-size:25px; }
+.writing-mode { margin:12px 0;display:flex;gap:0;padding:3px; background:#eff1f7;border-radius:12px;width:fit-content; }
+.writing-mode button { flex:none;min-height:44px;border:0;background:transparent;font-size:14px;padding:8px 16px;border-radius:9px; }
+.writing-mode button[aria-pressed="true"] { border:0;background:#fff;box-shadow:0 1px 5px #3433481c;color:#a72150; }
+.calculation-desk { display:grid;gap:16px; }.calculation-desk.with-writing { grid-template-columns:minmax(0,1.2fr) minmax(200px,1fr); }.writing-area,.answer-area { min-width:0; }.writing-area[hidden] { display:none; }
+.handwriting { margin:0;position:relative; }.writing-toolbar { display:flex;flex-wrap:wrap;gap:4px; margin:0 0 6px;font-size:12px; }.writing-toolbar b { flex-basis:auto;flex:1;font-size:14px; }.writing-toolbar button { font-size:12px;padding:4px 7px;min-height:44px;border:1px solid #d5dbe7;border-radius:8px; }
+.writing-paper { height:278px;border:1px solid #b3c3da;border-radius:12px;background:#fafdff; }
+.writing-guide { inset:10px; }.writing-places { font-size:12px; }.writing-carry { height:34px; }.writing-number { height:50px;font-size:29px; }.writing-line { height:95px; }
+.writing-confirm { position:absolute;top:48px;left:4px;right:4px;z-index:2;border:1px solid #dbc374;box-shadow:var(--shadow);font-size:14px; }
+.handwriting p { font-size:12px;line-height:1.5;margin:6px 0 0;color:#615d72; }
+.answer-label { font-size:14px;font-weight:800;color:#615d72;min-height:24px;margin-bottom:6px; }
+.answer-display { height:58px;align-items:center;border:2px solid #cbd3e3;border-radius:12px;box-shadow:none; }.answer-display span { font-size:34px; }.answer-display b { font-size:16px; }
+.message { min-height:48px;padding:6px 0;font-size:14px;line-height:1.4; }
+.keypad { gap:6px; }.keypad button { height:46px;border:1px solid #d4d9e5;border-bottom:3px solid #c5cbda;border-radius:10px;font-size:22px; }.keypad .clear-key { background:#fff0f4; }.primary-button { min-height:48px;margin-top:10px;font-size:16px;letter-spacing:0;border-radius:12px;box-shadow:0 3px 0 #a72150;background:#ce3669; }.next-button { background:#27835d;box-shadow:0 3px 0 #175b40; }
+.helper-toggle { margin-top:12px;min-height:44px; font-size:14px; }.column-title { font-size:14px; }
+footer { padding:4px 16px 16px;font-size:12px; }
+
+@media (max-width:1192px) { .progress-wrap,.order-strip,.game-grid { margin-left:16px;margin-right:16px; } }
+@media (min-width:600px) and (max-width:1100px) {
+  .game-grid { grid-template-columns:1fr;gap:12px;max-width:none; }
+  .shop-panel { display:grid;grid-template-columns:1fr; padding:12px; }
+  .customer-scene,.basket-title { display:none; }
+  .product-card { min-height:132px;display:grid;grid-template-columns:40px minmax(60px,1fr) auto;gap:8px;align-items:center;text-align:left;padding:10px; }
+  .product-emoji { font-size:32px; }.product-card h2 { font-size:14px; }.price-coins { margin:0;align-items:flex-end; }
+  .register-panel { padding:14px 18px; }.phase-tabs { position:absolute;right:18px;top:18px;margin:0; }
+  .calculation-desk.with-writing { grid-template-columns:minmax(0,1.3fr) minmax(230px,1fr);gap:20px; }
+  .writing-paper { height:300px; }.writing-carry { height:40px; }.writing-number { height:56px; }
+  .phase-change .product-list { display:none; }
+  .phase-change .money-help { margin:0;display:flex;align-items:center;gap:16px; }.phase-change .money-label { flex:1;margin:0; }.phase-change .money-help + .money-help { margin-top:8px; }
+}
+@media (max-width:599px) {
+  .topbar { height:54px;padding:5px 12px; }.brand-mark { width:32px;height:32px;font-size:22px; }.brand h1 { font-size:19px; }.score-chip { height:34px;min-width:70px;padding:0 8px; }.icon-button { width:44px;height:44px; }.top-actions { gap:4px; }
+  .progress-wrap { margin:0 12px;padding:7px 0;gap:8px; }.progress-label { font-size:12px;gap:6px; }.progress-label b { display:none; }.customer-dots { gap:8px; }.customer-dots span { width:22px;height:22px;font-size:14px; }
+  .order-strip { margin:0 8px 8px;padding:6px 10px;min-height:48px;border-radius:10px;gap:5px; }.order-customer { font-size:24px; }.order-customer small { display:none; }.order-equation { gap:7px; }.order-equation span { font-size:14px; }.order-equation b { font-size:21px; }.order-equation small { display:block;margin:0;font-size:12px; }
+  .game-grid { margin:0 8px; padding:0 0 10px;grid-template-columns:1fr;gap:8px; }
+  .shop-panel { padding:8px;border-radius:14px; }.customer-scene,.basket-title { display:none; }.product-list { gap:6px; }
+  .product-card { min-height:164px;padding:6px 4px;gap:2px;border-radius:10px;position:relative; }.product-emoji { font-size:24px;position:absolute;top:7px;left:6px; }.product-card h2 { font-size:12px;padding-left:26px;min-height:20px;display:flex;align-items:center; }.product-card p b { font-size:22px; }.product-card p { font-size:12px; }
+  .price-coins { gap:3px; }.price-money-group { min-width:22px;gap:1px; }.price-coin,.price-coin-10 { width:22px;height:22px; }.price-coin-5 { width:21px;height:21px; }.price-coin-1 { width:20px;height:20px; }.price-coin b { font-size:10px; }
+  .register-panel { padding:10px;border-radius:14px; }.phase-tabs { justify-content:flex-end;position:absolute;top:12px;right:10px;font-size:12px;gap:4px; }.phase-tabs span { width:18px;height:18px;font-size:12px; }.phase-tabs i { width:10px; }.question-block h2 { font-size:20px;padding-right:120px; }
+  .writing-mode { margin:8px 0; }.writing-mode button { font-size:14px;padding:4px 12px;min-height:44px; }
+  .calculation-desk.with-writing { grid-template-columns:1fr;gap:8px; }.writing-toolbar { position:absolute;top:-53px;right:0;margin:0; }.writing-toolbar b { display:none; }.writing-toolbar button { width:44px;min-height:44px;padding:2px;font-size:11px;line-height:1.25; }
+  .writing-paper { height:218px; }.writing-guide { inset:6px 10px; }.writing-carry { height:26px; }.writing-number { height:40px;font-size:27px; }.writing-line { height:75px; }.handwriting p { margin:4px 0 0;font-size:12px; }.writing-confirm { top:4px; }
+  .answer-area { display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;align-items:center; }.answer-label { min-height:0;margin:0;font-size:12px; }.answer-display { grid-column:2;grid-row:1 / span 2;height:48px; }.answer-display span { font-size:30px; }.message { grid-column:1;min-height:30px;justify-content:flex-start;text-align:left;font-size:12px;padding:0; }
+  .keypad { grid-column:1 / -1;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px; }.keypad button { height:44px;font-size:20px;padding:0;border-radius:8px; }
+  .answer-area>.primary-button { grid-column:1 / -1;min-height:44px;margin:0 0 3px; }
+  .phase-change .product-list { display:none; }.phase-change .money-help { margin:0;padding:6px 8px;display:flex;gap:8px;align-items:center; }.phase-change .money-label { flex:1;font-size:12px;margin:0; }.phase-change .money-label b { font-size:14px;margin:0; }.phase-change .money-help + .money-help { margin-top:6px; }.money-pieces { gap:4px; }.money-piece-group { flex-direction:row;gap:3px; }
+  footer { font-size:12px; }
+}
+@media (max-width:359px) {
+  .writing-mode button { padding:4px 6px;font-size:12px; }.question-block h2 { font-size:18px; }.price-coins { gap:1px; }.price-money-group { min-width:21px; }
+}
+
+/* A blank scratchpad is always available; the worked setup is opt-in. */
+.calculation-desk.free-memo-desk { grid-template-columns:minmax(180px,.85fr) minmax(0,1.3fr); gap:16px; margin-top:16px; align-items:start; }
+.free-memo .memo-heading { display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px; }
+.memo-heading b { font-size:16px;white-space:nowrap; }
+.hint-toggle { min-height:44px;padding:6px 10px;border:1px solid #dfbd69;border-radius:10px;background:#fff5d7;color:#705213;font-size:14px;font-weight:800;cursor:pointer; }
+.free-memo .writing-toolbar { position:static;display:flex;flex-wrap:wrap;margin:6px 0;gap:6px; }
+.free-memo .writing-toolbar button { width:auto;min-height:44px;padding:6px 8px;font-size:12px; }
+.free-memo .writing-paper { height:310px;background:#fff; }
+.free-memo .writing-confirm { top:100px; }
+.column-hint { margin-top:10px;padding:10px;background:#fff9e9;border:1px solid #e5d49d;border-radius:12px; }
+.column-hint p { margin:0 0 8px;font-size:14px;color:#705213; }
+.column-hint .writing-guide { position:static;pointer-events:auto;max-width:280px;margin:auto; }
+.column-hint .writing-carry { display:none; }
+.column-hint .writing-number { height:40px;font-size:26px; }
+.column-hint .writing-line { height:12px;background:none; }
+@media (max-width:599px) {
+  .calculation-desk.free-memo-desk { grid-template-columns:minmax(138px,.9fr) minmax(0,1.1fr);gap:8px;margin-top:12px; }
+  .free-memo-desk .answer-area { display:block; }
+  .free-memo-desk .answer-label { font-size:12px;min-height:44px;display:flex;align-items:center; }
+  .free-memo-desk .answer-display { margin-top:6px; }
+  .free-memo-desk .message { min-height:58px;padding:6px 0; }
+  .free-memo-desk .keypad { grid-template-columns:repeat(3,minmax(0,1fr));gap:3px; }
+  .free-memo-desk .keypad button { min-width:44px;height:46px; }
+  .free-memo-desk .primary-button { width:100%;margin-top:8px;font-size:14px; }
+  .free-memo .memo-heading { flex-wrap:wrap;gap:4px; }
+  .memo-heading b { font-size:14px; }
+  .hint-toggle { font-size:12px;padding:4px 6px; }
+  .free-memo .writing-toolbar { gap:4px; }
+  .free-memo .writing-toolbar button { flex:1;padding:3px;font-size:12px; }
+  .free-memo .writing-paper { height:288px; }
+  .column-hint { padding:6px; }.column-hint p { font-size:12px; }
+  .column-hint .writing-number { grid-template-columns:16px repeat(4,1fr);font-size:20px;height:34px; }
+  .column-hint .writing-places,.column-hint .writing-line { margin-left:16px; }
+}
