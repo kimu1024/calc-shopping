@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Handwriting from "./Handwriting";
+import ShopperGame from "./ShopperGame";
 
 type Product = { name: string; emoji: string; price: number; color: string };
 type Customer = { name: string; emoji: string; message: string };
@@ -155,6 +156,23 @@ function MoneyPicture({ amount, label, pieces = moneyPieces(amount) }: { amount:
 }
 
 export default function Home() {
+  const [mode, setMode] = useState<"home" | "clerk" | "customer">("home");
+  const [confirmExit, setConfirmExit] = useState(false);
+  if (mode === "home") return <main className="mode-home">
+    <div className="mode-brand">🌹 バラマート</div>
+    <h1>きょうは どっちで あそぶ？</h1>
+    <p>おみせやさんに なっても、おかいものに 来ても OK！</p>
+    <div className="mode-choices">
+      <button className="mode-card clerk-mode" onClick={() => setMode("clerk")}><span className="mode-emoji">🧑‍🍳</span><h2>店員さんモード</h2><p>いらっしゃいませ！<br />レジで ねだんと おつりを けいさん。</p><b>おみせを はじめる →</b></button>
+      <button className="mode-card customer-mode" onClick={() => setMode("customer")}><span className="mode-emoji">🛍️</span><h2>お客さんモード</h2><p>これ、くださいな！<br />おさいふを もって おかいもの。</p><b>おかいものに 行く →</b></button>
+    </div><small>あせらなくて だいじょうぶ。メモを つかって 考えてね。</small>
+  </main>;
+  return <><div className="mode-navigation"><button className="secondary-button" onClick={() => setConfirmExit(value => !value)}>← モードを えらぶ</button><span>{mode === "clerk" ? "店員さんモード" : "🌹 バラマート・お客さんモード"}</span></div>
+    {confirmExit && <div className="exit-confirm" role="region" aria-label="モード選択にもどる確認"><span>今のゲームを おわって もどる？</span><button className="secondary-button" onClick={() => { setMode("home"); setConfirmExit(false); }}>もどる</button><button className="secondary-button" onClick={() => setConfirmExit(false)}>つづける</button></div>}
+    {mode === "clerk" ? <ClerkGame /> : <ShopperGame />}</>;
+}
+
+function ClerkGame() {
   const [rounds, setRounds] = useState<Round[]>([]);
   const [roundIndex, setRoundIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("total");

@@ -5,7 +5,7 @@ import type { PointerEvent } from "react";
 
 type Point = { x: number; y: number };
 
-export default function Handwriting({ numbers, subtract }: { numbers: number[]; subtract: boolean }) {
+export default function Handwriting({ numbers, subtract, showHints = true }: { numbers: number[]; subtract: boolean; showHints?: boolean }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const strokes = useRef<Point[][]>([]);
   const active = useRef<number | null>(null);
@@ -63,7 +63,7 @@ export default function Handwriting({ numbers, subtract }: { numbers: number[]; 
   }
 
   return <section className="handwriting free-memo" aria-label="自由に書けるメモ欄">
-    <div className="memo-heading"><b>メモ欄</b><button className="hint-toggle" aria-expanded={showHint} aria-controls="column-hint" onClick={() => setShowHint(value => !value)}>{showHint ? "ヒントを とじる" : "💡 ヒント"}</button></div>
+    <div className="memo-heading"><b>メモ欄</b>{showHints && <button className="hint-toggle" aria-expanded={showHint} aria-controls="column-hint" onClick={() => setShowHint(value => !value)}>{showHint ? "ヒントを とじる" : "💡 ヒント"}</button>}</div>
     <div className="writing-toolbar">
       <button disabled={!count} onClick={() => { strokes.current.pop(); setCount(strokes.current.length); redraw(); }}>ひとつ もどす</button>
       <button disabled={!count} onClick={() => setConfirmClear(true)}>ぜんぶ けす</button>
