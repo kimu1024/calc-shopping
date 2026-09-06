@@ -276,11 +276,11 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="order-strip" aria-label="いまの計算">
+      <div className="order-strip" aria-label="おきゃくさまの おはなし">
         <span className="order-customer">{round.customer.emoji} <small>{roundIndex + 1}人目</small></span>
-        <div className="order-equation">
-          {phase === "total" ? <><span>{round.products[0].emoji} <b>{round.products[0].price}</b>円</span><i>＋</i><span>{round.products[1].emoji} <b>{round.products[1].price}</b>円</span></> : <><span><small>おあずかり</small><b>{round.payment}</b>円</span><i>−</i><span><small>おかいもの</small><b>{total}</b>円</span></>}
-          <i>＝</i><b className="order-question">？</b>
+        <div className="order-story">
+          <p>{phase === "total" ? ["これと これ、くださいな♪ おかいものって わくわくするね！", "すてきなものを みつけたよ！ レジを おねがいします♪", "おうちに もってかえるのが たのしみ！ これ、くださいな。", "きょうの おかいものは これに きめた！ おねがいします♪"][roundIndex] : `${round.payment}円で おねがいします！ おつりは あるかな？`}</p>
+          <small>{phase === "total" ? round.products.map(product => `${product.emoji} ${product.price}円`).join("　／　") : `レシート：おかいもの ${total}円`}</small>
         </div>
       </div>
 
@@ -317,7 +317,6 @@ export default function Home() {
           <div className="question-block">
             <p className="eyebrow">{phase === "total" ? "レジで けいさん" : "おつりを けいさん"}</p>
             <h2>{phase === "total" ? "ぜんぶで いくら？" : "おつりは いくら？"}</h2>
-            {phase === "change" && <div className="formula"><span>{round.payment}円</span><b>−</b><span>{total}円</span><b>＝</b><em>?</em></div>}
           </div>
 
           <div className="calculation-desk free-memo-desk">

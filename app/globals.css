@@ -131,7 +131,9 @@ html { background:#f0f3f8; }
 .progress-track { flex:1; height:6px; }.customer-dots { margin:0; padding:0; gap:12px; }.customer-dots span { width:28px;height:28px;font-size:16px; }.customer-dots span.active { transform:none;box-shadow:0 0 0 3px #ffe4ec; }
 .order-strip { position:sticky; top:0; z-index:10; max-width:1160px; margin:0 auto 12px; min-height:58px; padding:8px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; border:1px solid #d8dce8; border-radius:14px; background:#fff; box-shadow:0 4px 12px #27243d0c; }
 .order-customer { display:flex; align-items:center; gap:8px; font-size:30px; }.order-customer small { font-size:14px; font-weight:800; }
-.order-equation { display:flex;align-items:center;gap:14px; }.order-equation span { white-space:nowrap; font-size:16px; }.order-equation b { font-size:25px; font-variant-numeric:tabular-nums; }.order-equation i { font-style:normal;color:#9293a2; }.order-equation small { font-size:12px;margin-right:8px; }.order-equation .order-question { color:#bf2b5c; }
+.order-story { flex:1;min-width:0; }
+.order-story p { margin:0;font-size:14px;font-weight:800;line-height:1.5; }
+.order-story small { display:block;margin-top:3px;font-size:13px;color:#615d72; }
 .game-grid { max-width:1160px; padding:0 0 16px; grid-template-columns:minmax(290px,.7fr) minmax(0,1.3fr); gap:16px; }
 .shop-panel,.register-panel { border:1px solid #dce0ea; border-radius:20px; box-shadow:var(--shadow); background:#fff; }
 .shop-panel { padding:16px;min-height:0; }.awning { display:none; }
